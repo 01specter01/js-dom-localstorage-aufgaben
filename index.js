@@ -1,30 +1,45 @@
-const form = document.querySelector("form");
-const ul = document.querySelector("ul");
-const liTest = document.getElementById("test");
-const safeElem = document.querySelector("#safe");
-const inputElem = document.querySelector("#eingabetext");
+document.addEventListener("DOMContentLoaded", () => {
+    const list = document.querySelector("ul");
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-const safeLocal = window.localStorage.getItem("safeLocal");
+    tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.innerText = task;
+        list.appendChild(li);
+    });
 
-safeElem.addEventListener("click", (event) => {
-    event.preventDefault();
+    list.addEventListener("click", function (event) {
+        if (event.target.matches("li")) {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            const newTasks = tasks.filter(
+                (task) => task !== event.target.innerText
+            );
+            console.log(event.target.innerText, newTasks);
+            localStorage.setItem("tasks", JSON.stringify(newTasks));
+            event.target.remove();
+        }
+    });
 
-    const safeLocal = [""];
+    const form = document.querySelector("form");
 
-    const newValue = inputElem.value;
-    safeLocal.push(newValue);
-    console.log(newValue);
-    window.localStorage.setItem = newValue;
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const task = form.elements.task.value;
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const newTasks = [...tasks, task];
+        localStorage.setItem("tasks", JSON.stringify(newTasks));
+        const newTask = document.createElement("li");
+        newTask.innerText = task;
+        list.appendChild(newTask);
+        form.reset();
+    });
+
+    document
+        .getElementById("reset-list")
+        .addEventListener("click", function (event) {
+            event.preventDefault();
+            localStorage.removeItem("tasks");
+            list.innerHTML = "";
+        });
 });
-
-document.addEventListener("click", function (event) {
-    console.log("document", event.target, event.currentTarget);
-});
-
-ul.addEventListener("click", function (event) {
-    console.log("ul", event.target, event.currentTarget);
-});
-
-liTest.addEventListener("click", function (event) {
-    console.log("li", event.target, event.currentTarget);
-});
+const formElem = document.querySelector("form");
